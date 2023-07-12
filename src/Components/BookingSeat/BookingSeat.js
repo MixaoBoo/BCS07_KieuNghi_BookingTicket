@@ -1,28 +1,54 @@
-import React from "react";
+import React, { useState } from "react";
 import { arrSeat } from "../../assets/data";
 
 const BookingSeat = () => {
+  const [listOrderSeat, setListOrderSeat] = useState(arrSeat);
+  const [infoUser, setInfoUser] = useState({
+    name: "",
+    numberOfSeats: 0,
+  });
+  const [isSelectSeat, setIsSelectSeat] = useState(false);
   console.log(arrSeat);
+  console.log("listOrderSeat: ", listOrderSeat);
 
   const renderSeats = () =>
-    arrSeat.map((item, index) => {
+    arrSeat.map((item1, index) => {
       const renderInputs = arrSeat[index].danhSachGhe.map((item) =>
         index !== 0 ? (
-          <td className="p-1">
+          <td className="p-1" key={`${item.soGhe}${index}`}>
             <input
               type="checkbox"
-              class="seats"
-              value={item.soGhe}
-              disabled=""
+              className={`seats ${item.daDat ? "reserved" : ""}`}
+              disabled={item.daDat}
+              value={item.dangChon ?? false}
+              onChange={(event) => {
+                setListOrderSeat(() => {
+                  const indexSeat = arrSeat[index].danhSachGhe.findIndex(
+                    ({ soGhe }) => soGhe === item.soGhe
+                  );
+                  console.log("event.target.value: ", event.target.value);
+                  if (indexSeat !== -1) {
+                    arrSeat[index].danhSachGhe[indexSeat] = {
+                      ...arrSeat[index].danhSachGhe[indexSeat],
+                      dangChon: event.target.value,
+                    };
+                  }
+                  return [...listOrderSeat];
+                });
+              }}
             ></input>
           </td>
         ) : (
-          <td className="p-1">{item.soGhe}</td>
+          <td key={`${item.soGhe}${index}`} className="p-1">
+            {item.soGhe}
+          </td>
         )
       );
       return (
-        <tr key={index}>
-          <td className="p-1">{item.hang}</td>
+        <tr key={`${item1.hang}${index}`}>
+          <td className="p-1" key={`${item1.hang}${index}`}>
+            {item1.hang}
+          </td>
           {renderInputs}
         </tr>
       );
@@ -34,27 +60,51 @@ const BookingSeat = () => {
           <div className="main">
             <div className="inputForm">
               <h2 className="mb-3">
-                fill the required details below and select your seats
+                Fill the required details below and select your seats
               </h2>
               <div className="row mb-3">
-                <div class="col-md-6">
+                <div className="col-md-6">
                   <label htmlFor="name" className="form-label">
-                    Name*
+                    Name{" "}
+                    <span style={{ color: "red", fontSize: "20px" }}>*</span>
                   </label>
-                  <input type="text" className="form-control" id="name" />
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="name"
+                    onChange={(event) =>
+                      setInfoUser({
+                        ...infoUser,
+                        name: event.target.value.trim(),
+                      })
+                    }
+                  />
                 </div>
                 <div className="col-md-6">
                   <label htmlFor="numberSeats" className="form-label">
-                    Number of seat*
+                    Number of seat{" "}
+                    <span style={{ color: "red", fontSize: "20px" }}>*</span>
                   </label>
                   <input
                     type="number"
                     className="form-control"
                     id="numberSeats"
+                    onChange={(event) => {
+                      setInfoUser({
+                        ...infoUser,
+                        numberOfSeats: event.target.value,
+                      });
+                    }}
                   />
                 </div>
               </div>
-              <button className="btn btn-primary mb-3" onclick="takeData()">
+              <button
+                className="btn btn-primary mb-3"
+                disabled={!(infoUser.name.length && infoUser.numberOfSeats > 0)}
+                onClick={() => {
+                  setIsSelectSeat(true);
+                }}
+              >
                 Start Selecting
               </button>
             </div>
@@ -69,25 +119,40 @@ const BookingSeat = () => {
                 <span className="emptyBox"></span>Empty Seat
               </li>
             </ul>
+            {isSelectSeat ? (
+              <p
+                className="p-1"
+                style={{
+                  backgroundColor: "orange",
+                  color: "#000",
+                  width: "50%",
+                  margin: "auto",
+                  textAlign: "center",
+                }}
+              >
+                Please Select your Seats NOW!
+              </p>
+            ) : (
+              <p></p>
+            )}
 
             {/* render list seats */}
             <table>
               <tbody>{renderSeats()}</tbody>
             </table>
+            {/* <table className={isSelectSeat ? "" : "preventEvent"}>
+              <tbody>{renderSeats()}</tbody>
+            </table> */}
 
             <div
               className="s d-flex flex-column justify-content-center align-items-center mb-3"
               style={{ overflowX: "auto" }}
             >
               <p id="notification" />
-              <div className="screen-title w-100 bg-danger d-flex justify-content-center align-items-center mb-3">
+              <div className="screen-title w-100 bg-warning d-flex justify-content-center align-items-center mb-3 py-3">
                 <p>Screen this way</p>
               </div>
-              <button
-                className="btn btn-primary mx-auto"
-                onclick="updateTextArea()"
-                disabled
-              >
+              <button className="btn btn-primary mx-auto" disabled>
                 Confirm Selection
               </button>
             </div>
@@ -95,13 +160,13 @@ const BookingSeat = () => {
               className="displayerBoxes txt-center"
               style={{ overflowX: "auto" }}
             >
-              <table class="table table-light">
+              <table className="table table-light">
                 <thead>
                   <tr>
-                    <th scope="col">#</th>
                     <th scope="col">Name</th>
                     <th scope="col">Number of Seats</th>
                     <th scope="col">Seats</th>
+                    <th scope="col">Price</th>
                   </tr>
                 </thead>
                 <tbody>

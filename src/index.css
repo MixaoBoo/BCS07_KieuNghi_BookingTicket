@@ -79,10 +79,10 @@ input[type="checkbox"] {
   background: yellow;
 }
 
-input[type="checkbox"]:before {
+input[type="checkbox"]::before {
   content: "";
-  width: 25px;
-  height: 18px;
+  width: 27px;
+  height: 27px;
   border-radius: 5px;
   display: inline-block;
   vertical-align: middle;
@@ -93,10 +93,15 @@ input[type="checkbox"]:before {
   background-color: #ffffff;
 }
 
-/* @font-face {
-  font-family: "fontGame";
-  src: url("../font/Pony.ttf");
-} */
+input[type="checkbox"]:checked::before {
+  background-color: Green;
+  font-size: 15px;
+}
+
+.reserved::before {
+  background-color: red !important;
+  font-size: 15px;
+}
 
 .bookingMovie {
   font-family: "fontGame";
@@ -161,4 +166,8 @@ input[type="checkbox"]:before {
   border-radius: 5px;
   width: 45px;
   height: 35px;
+}
+
+.preventEvent {
+  pointer-events: none;
 }
